@@ -1,0 +1,15 @@
+import 'package:flutter/material.dart';
+
+class AdminPage extends StatelessWidget {
+  const AdminPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Panel administrativo')),
+      body: const Center(
+        child: Text('Bienvenido, administrador. El panel completo se implementa en la Fase 8.'),
+      ),
+    );
+  }
+}
