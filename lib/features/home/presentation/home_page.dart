@@ -34,6 +34,18 @@ class HomePage extends ConsumerWidget {
                 Text('Bienvenido, ${perfil.nombreCompleto}', style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 8),
                 Text('Rol: ${perfil.rolNombre}'),
+                                const SizedBox(height: 16),
+                FilledButton.tonal(
+                  onPressed: () => context.push('/proposals'),
+                  child: const Text('Ver propuestas'),
+                ),
+                if (perfil.esAdministrador) ...[
+                  const SizedBox(height: 8),
+                  OutlinedButton(
+                    onPressed: () => context.push('/admin/proposals'),
+                    child: const Text('Revisar propuestas'),
+                  ),
+                ],
                 if (perfil.esAdministrador) ...[
                   const SizedBox(height: 16),
                   FilledButton(

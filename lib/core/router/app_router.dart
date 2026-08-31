@@ -12,9 +12,14 @@ import '../../features/auth/presentation/register_page.dart';
 import '../../features/auth/presentation/reset_password_page.dart';
 import '../../features/home/presentation/home_page.dart';
 import '../../shared/providers/supabase_provider.dart';
+import '../../features/proposals/domain/propuesta.dart';
+import '../../features/proposals/presentation/admin_proposal_review_page.dart';
+import '../../features/proposals/presentation/proposal_detail_page.dart';
+import '../../features/proposals/presentation/proposal_form_page.dart';
+import '../../features/proposals/presentation/proposals_list_page.dart';
 
-/// Adapta un Stream a Listenable para que go_router reevalúe redirect()
-/// cada vez que cambia el estado de sesión de Supabase.
+
+
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
     notifyListeners();
@@ -65,6 +70,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/reset-password', builder: (context, state) => const ResetPasswordPage()),
       GoRoute(path: '/home', builder: (context, state) => const HomePage()),
       GoRoute(path: '/admin', builder: (context, state) => const AdminPage()),
+      GoRoute(path: '/proposals', builder: (context, state) => const ProposalsListPage()),
+      GoRoute(path: '/proposals/create', builder: (context, state) => const ProposalFormPage()),
+      GoRoute(path: '/proposals/:id',builder: (context, state) => ProposalDetailPage(propuestaId: state.pathParameters['id']!),),
+      GoRoute(path: '/proposals/:id/edit',builder: (context, state) => ProposalFormPage(propuestaExistente: state.extra as Propuesta),),
+      GoRoute(path: '/admin/proposals', builder: (context, state) => const AdminProposalReviewPage()),
     ],
   );
 });
