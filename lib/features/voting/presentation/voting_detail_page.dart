@@ -1,0 +1,140 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/errors/error_mapper.dart';
+import '../application/voting_providers.dart';
+
+class VotingDetailPage extends ConsumerStatefulWidget {
+  const VotingDetailPage({super.key, required this.votacionId});
+  final String votacionId;
+
+  @override
+  ConsumerState<VotingDetailPage> createState() => _VotingDetailPageState();
+}
+
+class _VotingDetailPageState extends ConsumerState<VotingDetailPage> {
+  bool _votando = false;
+  String? _error;
+
+  Future<void> _votar(String opcionId) async {
+    setState(() {
+      _votando = true;
+      _error = null;
+    });
+    try {
+      await ref.read(votingRepositoryProvider).emitirVoto(votacionId: widget.votacionId, opcionId: opcionId);
+      ref.invalidate(yaVotoProvider(widget.votacionId));
+      ref.invalidate(resultadosVotacionProvider(widget.votacionId));
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Voto registrado. ¡Gracias por participar!')));
+      }
+    } catch (e) {
+      setState(() => _error = mapSupabaseError(e).message);
+    } finally {
+      if (mounted) setState(() => _votando = false);
+    }
+  }
+
+  String _fmt(DateTime d) => '${d.day}/${d.month}/${d.year}';
+
+  @override
+  Widget build(BuildContext context) {
+    final votacionAsync = ref.watch(votacionProvider(widget.votacionId));
+    final opcionesAsync = ref.watch(opcionesVotacionProvider(widget.votacionId));
+    final yaVotoAsync = ref.watch(yaVotoProvider(widget.votacionId));
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Votación')),
+      body: votacionAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('No se pudo cargar: $e')),
+        data: (votacion) => SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(votacion.titulo, style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(height: 8),
+              Chip(label: Text(votacion.estadoLegible)),
+              const SizedBox(height: 8),
+              Text('Del ${_fmt(votacion.fechaInicio)} al ${_fmt(votacion.fechaFin)}'),
+              if (votacion.descripcion != null && votacion.descripcion!.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Text(votacion.descripcion!),
+              ],
+              const SizedBox(height: 24),
+              yaVotoAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Text('No se pudo verificar tu participación: $e'),
+                data: (yaVoto) {
+                  final mostrarResultados = yaVoto || votacion.estado == 'finalizada';
+                  final permiteVotar = !yaVoto && votacion.estaAbierta;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (yaVoto)
+                        const Text('Ya registraste tu voto en esta votación.',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                      if (permiteVotar) ...[
+                        Text('Elige una opción:', style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(height: 8),
+                        opcionesAsync.when(
+                          loading: () => const CircularProgressIndicator(),
+                          error: (e, _) => Text('No se pudieron cargar las opciones: $e'),
+                          data: (opciones) => Column(
+                            children: opciones
+                                .map((o) => Card(
+                                      child: ListTile(
+                                        title: Text(o.propuestaTitulo),
+                                        trailing: _votando
+                                            ? const SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child: CircularProgressIndicator(strokeWidth: 2))
+                                            : FilledButton(
+                                                onPressed: () => _votar(o.id), child: const Text('Votar')),
+                                      ),
+                                    ))
+                                .toList(),
+                          ),
+                        ),
+                      ],
+                      if (!permiteVotar && !yaVoto)
+                        Text(votacion.estado == 'programada'
+                            ? 'Esta votación aún no ha iniciado.'
+                            : 'Esta votación no está abierta actualmente.'),
+                      if (_error != null) ...[
+                        const SizedBox(height: 12),
+                        Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                      ],
+                      if (mostrarResultados) ...[
+                        const SizedBox(height: 24),
+                        Text('Resultados', style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(height: 8),
+                        Consumer(builder: (context, ref, _) {
+                          final resultadosAsync = ref.watch(resultadosVotacionProvider(widget.votacionId));
+                          return resultadosAsync.when(
+                            loading: () => const CircularProgressIndicator(),
+                            error: (e, _) => Text('No se pudieron cargar los resultados: $e'),
+                            data: (resultados) => Column(
+                              children: resultados
+                                  .map((r) =>
+                                      ListTile(title: Text(r.propuestaTitulo), trailing: Text('${r.totalVotos} voto(s)')))
+                                  .toList(),
+                            ),
+                          );
+                        }),
+                      ],
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

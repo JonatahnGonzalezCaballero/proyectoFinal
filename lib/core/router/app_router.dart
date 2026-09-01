@@ -17,6 +17,10 @@ import '../../features/proposals/presentation/admin_proposal_review_page.dart';
 import '../../features/proposals/presentation/proposal_detail_page.dart';
 import '../../features/proposals/presentation/proposal_form_page.dart';
 import '../../features/proposals/presentation/proposals_list_page.dart';
+import '../../features/voting/presentation/admin_voting_create_page.dart';
+import '../../features/voting/presentation/admin_votings_list_page.dart';
+import '../../features/voting/presentation/voting_detail_page.dart';
+import '../../features/voting/presentation/votings_list_page.dart';
 
 
 
@@ -75,6 +79,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/proposals/:id',builder: (context, state) => ProposalDetailPage(propuestaId: state.pathParameters['id']!),),
       GoRoute(path: '/proposals/:id/edit',builder: (context, state) => ProposalFormPage(propuestaExistente: state.extra as Propuesta),),
       GoRoute(path: '/admin/proposals', builder: (context, state) => const AdminProposalReviewPage()),
+      GoRoute(path: '/votings', builder: (context, state) => const VotingsListPage()),
+      GoRoute(path: '/votings/:id', builder: (context, state) => VotingDetailPage(votacionId: state.pathParameters['id']!),),
+      GoRoute(path: '/admin/votings', builder: (context, state) => const AdminVotingsListPage()),
+      GoRoute(path: '/admin/votings/create', builder: (context, state) => const AdminVotingCreatePage()),
     ],
   );
 });
