@@ -22,7 +22,7 @@ class VotingRepository {
   Future<List<OpcionVotacion>> listarOpciones(String votacionId) async {
     final data = await _client
         .from('votacion_opciones')
-        .select('id, propuesta_id, orden, propuestas(titulo)')
+        .select('id, propuesta_id, etiqueta, orden, propuestas(titulo, descripcion)')
         .eq('votacion_id', votacionId)
         .order('orden');
     return data.map((m) => OpcionVotacion.fromMap(m)).toList();
@@ -71,6 +71,7 @@ class VotingRepository {
     required String descripcion,
     required DateTime fechaInicio,
     required DateTime fechaFin,
+    required String tipo,
     required List<String> propuestaIds,
   }) async {
     final id = await _client.rpc('crear_votacion', params: {
@@ -78,6 +79,7 @@ class VotingRepository {
       'p_descripcion': descripcion,
       'p_fecha_inicio': fechaInicio.toIso8601String(),
       'p_fecha_fin': fechaFin.toIso8601String(),
+      'p_tipo': tipo,
       'p_propuesta_ids': propuestaIds,
     });
     return id as String;

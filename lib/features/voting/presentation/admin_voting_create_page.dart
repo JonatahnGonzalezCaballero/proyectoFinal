@@ -18,7 +18,9 @@ class _AdminVotingCreatePageState extends ConsumerState<AdminVotingCreatePage> {
   final _descripcionCtrl = TextEditingController();
   DateTime? _fechaInicio;
   DateTime? _fechaFin;
-  final Set<String> _propuestasSeleccionadas = {};
+  String _tipo = 'seleccion_multiple';
+  final Set<String> _propuestasMultiples = {};
+  String? _propuestaUnica;
   bool _guardando = false;
   String? _error;
 
@@ -54,9 +56,20 @@ class _AdminVotingCreatePageState extends ConsumerState<AdminVotingCreatePage> {
       setState(() => _error = 'La fecha de fin debe ser posterior a la de inicio');
       return;
     }
-    if (_propuestasSeleccionadas.length < 2) {
-      setState(() => _error = 'Selecciona al menos dos propuestas');
-      return;
+
+    final List<String> propuestaIds;
+    if (_tipo == 'si_no') {
+      if (_propuestaUnica == null) {
+        setState(() => _error = 'Selecciona la propuesta a someter a votación');
+        return;
+      }
+      propuestaIds = [_propuestaUnica!];
+    } else {
+      if (_propuestasMultiples.length < 2) {
+        setState(() => _error = 'Selecciona al menos dos propuestas');
+        return;
+      }
+      propuestaIds = _propuestasMultiples.toList();
     }
 
     setState(() {
@@ -69,7 +82,8 @@ class _AdminVotingCreatePageState extends ConsumerState<AdminVotingCreatePage> {
             descripcion: _descripcionCtrl.text.trim(),
             fechaInicio: _fechaInicio!,
             fechaFin: _fechaFin!,
-            propuestaIds: _propuestasSeleccionadas.toList(),
+            tipo: _tipo,
+            propuestaIds: propuestaIds,
           );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Votación creada.')));
@@ -100,6 +114,19 @@ class _AdminVotingCreatePageState extends ConsumerState<AdminVotingCreatePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  SegmentedButton<String>(
+                    segments: const [
+                      ButtonSegment(value: 'seleccion_multiple', label: Text('Selección múltiple')),
+                      ButtonSegment(value: 'si_no', label: Text('Sí / No')),
+                    ],
+                    selected: {_tipo},
+                    onSelectionChanged: (nuevo) => setState(() {
+                      _tipo = nuevo.first;
+                      _propuestasMultiples.clear();
+                      _propuestaUnica = null;
+                    }),
+                  ),
+                  const SizedBox(height: 16),
                   TextFormField(
                     controller: _tituloCtrl,
                     decoration: const InputDecoration(labelText: 'Título'),
@@ -130,26 +157,42 @@ class _AdminVotingCreatePageState extends ConsumerState<AdminVotingCreatePage> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  Text('Propuestas aprobadas disponibles', style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    _tipo == 'si_no' ? 'Elige la propuesta a someter a votación' : 'Propuestas aprobadas disponibles',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   const SizedBox(height: 8),
                   propuestasAsync.when(
                     loading: () => const LinearProgressIndicator(),
                     error: (e, _) => Text('No se pudieron cargar: $e'),
                     data: (propuestas) {
                       if (propuestas.isEmpty) {
-                        return const Text('No hay propuestas aprobadas todavía para incluir en una votación.');
+                        return const Text('No hay propuestas aprobadas todavía.');
+                      }
+                      if (_tipo == 'si_no') {
+                        return Column(
+                          children: propuestas
+                              .map((p) => RadioListTile<String>(
+                                    title: Text(p.titulo),
+                                    subtitle: Text(p.categoriaNombre),
+                                    value: p.id,
+                                    groupValue: _propuestaUnica,
+                                    onChanged: (v) => setState(() => _propuestaUnica = v),
+                                  ))
+                              .toList(),
+                        );
                       }
                       return Column(
                         children: propuestas
                             .map((p) => CheckboxListTile(
                                   title: Text(p.titulo),
                                   subtitle: Text(p.categoriaNombre),
-                                  value: _propuestasSeleccionadas.contains(p.id),
+                                  value: _propuestasMultiples.contains(p.id),
                                   onChanged: (marcado) => setState(() {
                                     if (marcado == true) {
-                                      _propuestasSeleccionadas.add(p.id);
+                                      _propuestasMultiples.add(p.id);
                                     } else {
-                                      _propuestasSeleccionadas.remove(p.id);
+                                      _propuestasMultiples.remove(p.id);
                                     }
                                   }),
                                 ))

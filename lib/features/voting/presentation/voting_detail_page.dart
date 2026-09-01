@@ -77,17 +77,66 @@ class _VotingDetailPageState extends ConsumerState<VotingDetailPage> {
                       if (yaVoto)
                         const Text('Ya registraste tu voto en esta votación.',
                             style: TextStyle(fontWeight: FontWeight.bold)),
-                      if (permiteVotar) ...[
-                        Text('Elige una opción:', style: Theme.of(context).textTheme.titleMedium),
-                        const SizedBox(height: 8),
+                      if (permiteVotar)
                         opcionesAsync.when(
                           loading: () => const CircularProgressIndicator(),
                           error: (e, _) => Text('No se pudieron cargar las opciones: $e'),
-                          data: (opciones) => Column(
-                            children: opciones
-                                .map((o) => Card(
+                          data: (opciones) {
+                            if (opciones.isEmpty) return const SizedBox.shrink();
+
+                            if (votacion.esSiNo) {
+                              final propuestaTitulo = opciones.first.propuestaTitulo;
+                              final propuestaDescripcion = opciones.first.propuestaDescripcion;
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('¿Está de acuerdo con la siguiente propuesta?',
+                                      style: Theme.of(context).textTheme.titleMedium),
+                                  const SizedBox(height: 8),
+                                  Card(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(propuestaTitulo, style: Theme.of(context).textTheme.titleSmall),
+                                          if (propuestaDescripcion != null && propuestaDescripcion.isNotEmpty) ...[
+                                            const SizedBox(height: 4),
+                                            Text(propuestaDescripcion),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  if (_votando)
+                                    const Center(child: CircularProgressIndicator())
+                                  else
+                                    Row(
+                                      children: opciones
+                                          .map((o) => Expanded(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                                  child: FilledButton(
+                                                    onPressed: () => _votar(o.id),
+                                                    child: Text(o.tituloMostrado),
+                                                  ),
+                                                ),
+                                              ))
+                                          .toList(),
+                                    ),
+                                ],
+                              );
+                            }
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Elige una opción:', style: Theme.of(context).textTheme.titleMedium),
+                                const SizedBox(height: 8),
+                                ...opciones.map((o) => Card(
                                       child: ListTile(
-                                        title: Text(o.propuestaTitulo),
+                                        title: Text(o.tituloMostrado),
                                         trailing: _votando
                                             ? const SizedBox(
                                                 width: 20,
@@ -96,11 +145,11 @@ class _VotingDetailPageState extends ConsumerState<VotingDetailPage> {
                                             : FilledButton(
                                                 onPressed: () => _votar(o.id), child: const Text('Votar')),
                                       ),
-                                    ))
-                                .toList(),
-                          ),
+                                    )),
+                              ],
+                            );
+                          },
                         ),
-                      ],
                       if (!permiteVotar && !yaVoto)
                         Text(votacion.estado == 'programada'
                             ? 'Esta votación aún no ha iniciado.'
@@ -121,7 +170,7 @@ class _VotingDetailPageState extends ConsumerState<VotingDetailPage> {
                             data: (resultados) => Column(
                               children: resultados
                                   .map((r) =>
-                                      ListTile(title: Text(r.propuestaTitulo), trailing: Text('${r.totalVotos} voto(s)')))
+                                      ListTile(title: Text(r.opcionTitulo), trailing: Text('${r.totalVotos} voto(s)')))
                                   .toList(),
                             ),
                           );

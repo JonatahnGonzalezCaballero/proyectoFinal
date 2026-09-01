@@ -5,6 +5,7 @@ class Votacion {
   final DateTime fechaInicio;
   final DateTime fechaFin;
   final String estado;
+  final String tipo;
   final DateTime fechaCreacion;
 
   const Votacion({
@@ -14,6 +15,7 @@ class Votacion {
     required this.fechaInicio,
     required this.fechaFin,
     required this.estado,
+    required this.tipo,
     required this.fechaCreacion,
   });
 
@@ -24,6 +26,7 @@ class Votacion {
         fechaInicio: DateTime.parse(map['fecha_inicio'] as String),
         fechaFin: DateTime.parse(map['fecha_fin'] as String),
         estado: map['estado'] as String,
+        tipo: map['tipo'] as String? ?? 'seleccion_multiple',
         fechaCreacion: DateTime.parse(map['fecha_creacion'] as String),
       );
 
@@ -34,6 +37,8 @@ class Votacion {
         'cancelada' => 'Cancelada',
         _ => estado,
       };
+
+  bool get esSiNo => tipo == 'si_no';
 
   bool get estaAbierta {
     final ahora = DateTime.now();
