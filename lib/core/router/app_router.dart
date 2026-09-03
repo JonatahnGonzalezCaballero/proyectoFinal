@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/administration/presentation/admin_page.dart';
 import '../../features/auth/application/auth_providers.dart';
 import '../../features/auth/presentation/forgot_password_page.dart';
 import '../../features/auth/presentation/login_page.dart';
@@ -25,7 +24,10 @@ import '../../features/projects/presentation/admin_project_create_page.dart';
 import '../../features/projects/presentation/admin_project_update_page.dart';
 import '../../features/projects/presentation/project_detail_page.dart';
 import '../../features/projects/presentation/projects_list_page.dart';
-import '../../features/notifications/presentation/notifications_page.dart';  
+import '../../features/notifications/presentation/notifications_page.dart';
+import '../../features/administration/presentation/admin_categories_page.dart';
+import '../../features/administration/presentation/admin_dashboard_page.dart';
+import '../../features/administration/presentation/admin_users_page.dart';  
 
 
 
@@ -78,7 +80,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/forgot-password', builder: (context, state) => const ForgotPasswordPage()),
       GoRoute(path: '/reset-password', builder: (context, state) => const ResetPasswordPage()),
       GoRoute(path: '/home', builder: (context, state) => const HomePage()),
-      GoRoute(path: '/admin', builder: (context, state) => const AdminPage()),
       GoRoute(path: '/proposals', builder: (context, state) => const ProposalsListPage()),
       GoRoute(path: '/proposals/create', builder: (context, state) => const ProposalFormPage()),
       GoRoute(path: '/proposals/:id',builder: (context, state) => ProposalDetailPage(propuestaId: state.pathParameters['id']!),),
@@ -93,6 +94,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/admin/projects/create', builder: (context, state) => const AdminProjectCreatePage()),
       GoRoute(path: '/admin/projects/:id/update',builder: (context, state) => AdminProjectUpdatePage(proyectoId: state.pathParameters['id']!),),
       GoRoute(path: '/notifications', builder: (context, state) => const NotificationsPage()),
+      GoRoute(path: '/admin', builder: (context, state) => const AdminDashboardPage()),
+      GoRoute(path: '/admin/users', builder: (context, state) => const AdminUsersPage()),
+      GoRoute(path: '/admin/categories', builder: (context, state) => const AdminCategoriesPage()),
     ],
   );
 });

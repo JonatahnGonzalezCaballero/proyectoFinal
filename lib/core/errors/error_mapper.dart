@@ -3,6 +3,7 @@ import 'app_exception.dart';
 
 /// Traduce las excepciones de Supabase
 AppException mapSupabaseError(Object error) {
+  if (error is AppException) return error;
   if (error is AuthException) {
     return AppException(_mensajeAuth(error.message));
   }
