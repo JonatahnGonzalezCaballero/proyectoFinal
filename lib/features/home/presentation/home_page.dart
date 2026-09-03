@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
+import '../../notifications/application/notifications_providers.dart';
 import '../../auth/application/auth_providers.dart';
 
 class HomePage extends ConsumerWidget {
@@ -12,9 +12,22 @@ class HomePage extends ConsumerWidget {
     final perfilAsync = ref.watch(perfilActualProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Comunidad'),
+            appBar: AppBar(
+        title: const Text('Comunidad BGA'),
         actions: [
+          Consumer(builder: (context, ref, _) {
+            final noLeidasAsync = ref.watch(notificacionesNoLeidasProvider);
+            final count = noLeidasAsync.value ?? 0;
+            return IconButton(
+              tooltip: 'Notificaciones',
+              icon: Badge(
+                label: Text('$count'),
+                isLabelVisible: count > 0,
+                child: const Icon(Icons.notifications_outlined),
+              ),
+              onPressed: () => context.push('/notifications'),
+            );
+          }),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Cerrar sesión',

@@ -24,7 +24,8 @@ import '../../features/voting/presentation/votings_list_page.dart';
 import '../../features/projects/presentation/admin_project_create_page.dart';
 import '../../features/projects/presentation/admin_project_update_page.dart';
 import '../../features/projects/presentation/project_detail_page.dart';
-import '../../features/projects/presentation/projects_list_page.dart';  
+import '../../features/projects/presentation/projects_list_page.dart';
+import '../../features/notifications/presentation/notifications_page.dart';  
 
 
 
@@ -91,6 +92,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/projects/:id',builder: (context, state) => ProjectDetailPage(proyectoId: state.pathParameters['id']!),),
       GoRoute(path: '/admin/projects/create', builder: (context, state) => const AdminProjectCreatePage()),
       GoRoute(path: '/admin/projects/:id/update',builder: (context, state) => AdminProjectUpdatePage(proyectoId: state.pathParameters['id']!),),
+      GoRoute(path: '/notifications', builder: (context, state) => const NotificationsPage()),
     ],
   );
 });
