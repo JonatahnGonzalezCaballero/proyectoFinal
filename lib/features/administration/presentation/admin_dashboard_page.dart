@@ -12,6 +12,8 @@ class AdminDashboardPage extends StatelessWidget {
       (Icons.construction_outlined, 'Convertir propuesta en proyecto', '/admin/projects/create'),
       (Icons.people_outline, 'Gestión de usuarios', '/admin/users'),
       (Icons.category_outlined, 'Gestión de categorías', '/admin/categories'),
+      (Icons.bar_chart_outlined, 'Métricas y reportes', '/admin/metrics'),
+      (Icons.history_outlined, 'Auditoría', '/admin/audit'),
     ];
     return Scaffold(
       appBar: AppBar(title: const Text('Panel administrativo')),

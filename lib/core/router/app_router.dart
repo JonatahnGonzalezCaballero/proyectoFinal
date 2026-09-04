@@ -27,7 +27,9 @@ import '../../features/projects/presentation/projects_list_page.dart';
 import '../../features/notifications/presentation/notifications_page.dart';
 import '../../features/administration/presentation/admin_categories_page.dart';
 import '../../features/administration/presentation/admin_dashboard_page.dart';
-import '../../features/administration/presentation/admin_users_page.dart';  
+import '../../features/administration/presentation/admin_users_page.dart';
+import '../../features/metrics/presentation/admin_audit_page.dart';
+import '../../features/metrics/presentation/admin_metrics_page.dart';  
 
 
 
@@ -97,6 +99,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/admin', builder: (context, state) => const AdminDashboardPage()),
       GoRoute(path: '/admin/users', builder: (context, state) => const AdminUsersPage()),
       GoRoute(path: '/admin/categories', builder: (context, state) => const AdminCategoriesPage()),
+      GoRoute(path: '/admin/metrics', builder: (context, state) => const AdminMetricsPage()),
+      GoRoute(path: '/admin/audit', builder: (context, state) => const AdminAuditPage()),
     ],
   );
 });
