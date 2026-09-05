@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'grafico_barras.dart';
 
 import '../application/metrics_providers.dart';
 
@@ -50,6 +51,38 @@ class AdminMetricsPage extends ConsumerWidget {
                   _TarjetaMetrica('Participación', '${m.nivelParticipacion}%'),
                 ],
               ),
+              const SizedBox(height: 24),
+              GraficoBarras(
+                titulo: 'Propuestas por estado',
+                datos: [
+                  ('Pendiente', m.propuestasPendientes, Colors.amber),
+                  ('En revisión', m.propuestasEnRevision, Colors.blue),
+                  ('Aprobada', m.propuestasAprobadasPuras, Colors.green),
+                  ('Convertida', m.propuestasConvertidas, Colors.teal),
+                  ('Rechazada', m.propuestasRechazadas, Colors.red),
+                ],
+              ),
+              const SizedBox(height: 16),
+              GraficoBarras(
+                titulo: 'Votaciones por estado',
+                datos: [
+                  ('Programada', m.votacionesProgramadas, Colors.amber),
+                  ('Activa', m.votacionesActivas, Colors.green),
+                  ('Finalizada', m.votacionesFinalizadas, Colors.blue),
+                  ('Cancelada', m.votacionesCanceladas, Colors.red),
+                ],
+              ),
+              const SizedBox(height: 16),
+              GraficoBarras(
+                titulo: 'Proyectos por estado',
+                datos: [
+                  ('Planeado', m.proyectosPlaneados, Colors.amber),
+                  ('En ejecución', m.proyectosActivos, Colors.blue),
+                  ('Finalizado', m.proyectosFinalizados, Colors.green),
+                  ('Suspendido', m.proyectosSuspendidos, Colors.red),
+                ],
+              ),
+              const SizedBox(height: 24),
               const SizedBox(height: 24),
               OutlinedButton.icon(
                 onPressed: () async {
