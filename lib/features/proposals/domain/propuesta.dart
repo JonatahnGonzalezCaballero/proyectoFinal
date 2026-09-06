@@ -22,8 +22,9 @@ class Propuesta {
   final String? observaciones;
   final DateTime fechaCreacion;
   final List<ArchivoPropuesta> archivos;
+  final String autorNombre;
 
-  const Propuesta({
+const Propuesta({
     required this.id,
     required this.usuarioId,
     required this.categoriaId,
@@ -35,6 +36,7 @@ class Propuesta {
     this.observaciones,
     required this.fechaCreacion,
     this.archivos = const [],
+    this.autorNombre = '',
   });
 
   factory Propuesta.fromMap(Map<String, dynamic> map) {
@@ -51,11 +53,24 @@ class Propuesta {
       estado: map['estado'] as String,
       observaciones: map['observaciones'] as String?,
       fechaCreacion: DateTime.parse(map['fecha_creacion'] as String),
-      archivos: archivosRaw
-          .map((e) => ArchivoPropuesta.fromMap(e as Map<String, dynamic>))
-          .toList(),
+      archivos: archivosRaw.map((e) => ArchivoPropuesta.fromMap(e as Map<String, dynamic>)).toList(),
     );
   }
+
+  Propuesta copyWith({String? autorNombre}) => Propuesta(
+        id: id,
+        usuarioId: usuarioId,
+        categoriaId: categoriaId,
+        categoriaNombre: categoriaNombre,
+        titulo: titulo,
+        descripcion: descripcion,
+        ubicacion: ubicacion,
+        estado: estado,
+        observaciones: observaciones,
+        fechaCreacion: fechaCreacion,
+        archivos: archivos,
+        autorNombre: autorNombre ?? this.autorNombre,
+      );
 
   String get estadoLegible => switch (estado) {
         'pendiente' => 'Pendiente de revisión',

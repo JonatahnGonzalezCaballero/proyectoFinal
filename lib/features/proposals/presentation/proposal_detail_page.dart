@@ -29,6 +29,8 @@ class ProposalDetailPage extends ConsumerWidget {
                 Text(p.titulo, style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 8),
                 Chip(label: Text(p.estadoLegible)),
+                const SizedBox(height: 4),
+                Text('Publicado por ${p.autorNombre}', style: Theme.of(context).textTheme.bodySmall),
                 const SizedBox(height: 16),
                 Text('Categoría: ${p.categoriaNombre}'),
                 if (p.ubicacion != null && p.ubicacion!.isNotEmpty) Text('Ubicación: ${p.ubicacion}'),

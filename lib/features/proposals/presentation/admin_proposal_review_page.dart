@@ -75,6 +75,7 @@ class _TarjetaRevisionState extends ConsumerState<_TarjetaRevision> {
             Text(p.titulo, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
             Text('${p.categoriaNombre} · ${p.estadoLegible}'),
+            Text('Por: ${p.autorNombre}', style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 8),
             Text(p.descripcion, maxLines: 3, overflow: TextOverflow.ellipsis),
             const SizedBox(height: 12),

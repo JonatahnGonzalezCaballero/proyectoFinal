@@ -12,6 +12,20 @@ class ProposalsRepository {
   static const _selectConLookups =
       '*, categorias(nombre), propuesta_archivos(id, url)';
 
+  Future<List<Propuesta>> _conNombresAutor(List<Propuesta> propuestas) async {
+    if (propuestas.isEmpty) return propuestas;
+    final autorIds = propuestas.map((p) => p.usuarioId).toSet().toList();
+    final perfiles =
+        await _client.from('perfiles_publicos').select('id, alias, nombre_completo').inFilter('id', autorIds);
+    final nombrePorId = <String, String>{
+      for (final p in perfiles)
+        p['id'] as String: (((p['alias'] as String?)?.isNotEmpty ?? false)
+            ? p['alias'] as String
+            : (p['nombre_completo'] as String? ?? 'Ciudadano')),
+    };
+    return propuestas.map((p) => p.copyWith(autorNombre: nombrePorId[p.usuarioId] ?? 'Ciudadano')).toList();
+  }
+
   Future<List<Categoria>> listarCategorias() async {
     final data = await _client
         .from('categorias')
@@ -28,7 +42,7 @@ class ProposalsRepository {
         .select(_selectConLookups)
         .eq('usuario_id', userId)
         .order('fecha_creacion', ascending: false);
-    return data.map((m) => Propuesta.fromMap(m)).toList();
+    return _conNombresAutor(data.map((m) => Propuesta.fromMap(m)).toList());
   }
 
   Future<List<Propuesta>> listarPropuestasComunidad() async {
@@ -37,7 +51,7 @@ class ProposalsRepository {
         .select(_selectConLookups)
         .eq('estado', 'aprobada')
         .order('fecha_creacion', ascending: false);
-    return data.map((m) => Propuesta.fromMap(m)).toList();
+    return _conNombresAutor(data.map((m) => Propuesta.fromMap(m)).toList());
   }
 
   Future<List<Propuesta>> listarPendientesRevision() async {
@@ -46,16 +60,13 @@ class ProposalsRepository {
         .select(_selectConLookups)
         .inFilter('estado', ['pendiente', 'en_revision'])
         .order('fecha_creacion');
-    return data.map((m) => Propuesta.fromMap(m)).toList();
+    return _conNombresAutor(data.map((m) => Propuesta.fromMap(m)).toList());
   }
 
   Future<Propuesta> obtenerDetalle(String id) async {
-    final data = await _client
-        .from('propuestas')
-        .select(_selectConLookups)
-        .eq('id', id)
-        .single();
-    return Propuesta.fromMap(data);
+    final data = await _client.from('propuestas').select(_selectConLookups).eq('id', id).single();
+    final lista = await _conNombresAutor([Propuesta.fromMap(data)]);
+    return lista.first;
   }
 
   Future<String> crearPropuesta({

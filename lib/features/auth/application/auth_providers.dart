@@ -21,11 +21,11 @@ final perfilActualProvider = FutureProvider<PerfilUsuario?>((ref) async {
 
   if (session == null) return null;
 
-  final data = await client
+    final data = await client
       .from('usuarios')
-      .select('id, nombre_completo, correo, activo, roles(nombre)')
+      .select('id, nombre_completo, correo, activo, alias, telefono, avatar_url, roles(nombre)')
       .eq('id', session.user.id)
       .single();
-
+      
   return PerfilUsuario.fromMap(data);
 });

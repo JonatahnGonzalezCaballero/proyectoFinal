@@ -80,7 +80,7 @@ class _ListaPropuestas extends ConsumerWidget {
               return Card(
                 child: ListTile(
                   title: Text(p.titulo),
-                  subtitle: Text('${p.categoriaNombre} · ${p.estadoLegible}'),
+                  subtitle: Text('${p.categoriaNombre} · ${p.estadoLegible} · ${p.autorNombre}'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/proposals/${p.id}'),
                 ),

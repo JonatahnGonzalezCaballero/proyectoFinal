@@ -15,6 +15,11 @@ class HomePage extends ConsumerWidget {
             appBar: AppBar(
         title: const Text('Comunidad BGA'),
         actions: [
+          IconButton(
+            tooltip: 'Mi perfil',
+            icon: const Icon(Icons.person_outline),
+            onPressed: () => context.push('/profile'),
+          ),
           Consumer(builder: (context, ref, _) {
             final noLeidasAsync = ref.watch(notificacionesNoLeidasProvider);
             final count = noLeidasAsync.value ?? 0;
