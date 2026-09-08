@@ -41,37 +41,60 @@ class NotificationsPage extends ConsumerWidget {
           ),
         ],
       ),
-      body: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('No se pudo cargar: $e')),
-        data: (notificaciones) {
-          if (notificaciones.isEmpty) return const Center(child: Text('No tienes notificaciones.'));
-          return RefreshIndicator(
-            onRefresh: () async => ref.invalidate(notificacionesProvider),
-            child: ListView.separated(
-              itemCount: notificaciones.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final n = notificaciones[index];
-                return ListTile(
-                  leading: Icon(_iconoPara(n.tipo)),
-                  title:
-                      Text(n.titulo, style: TextStyle(fontWeight: n.leida ? FontWeight.normal : FontWeight.bold)),
-                  subtitle: Text(n.mensaje),
-                  trailing: n.leida ? null : const Icon(Icons.circle, size: 10, color: Colors.blue),
-                  onTap: () async {
-                    if (!n.leida) {
-                      await ref.read(notificationsRepositoryProvider).marcarLeida(n.id);
-                      ref.invalidate(notificacionesProvider);
-                      ref.invalidate(notificacionesNoLeidasProvider);
-                    }
-                    if (context.mounted) context.push(_rutaPara(n.tipo));
-                  },
+      body: Column(
+        children: [
+          Consumer(builder: (context, ref, _) {
+            final prefAsync = ref.watch(preferenciaNotifExternaProvider);
+            return prefAsync.when(
+              loading: () => const LinearProgressIndicator(),
+              error: (_, __) => const SizedBox.shrink(),
+              data: (activas) => SwitchListTile(
+                title: const Text('Recibir notificaciones por correo'),
+                subtitle: const Text('Las notificaciones dentro de la app siempre se mantienen activas.'),
+                value: activas,
+                onChanged: (v) async {
+                  await ref.read(notificationsRepositoryProvider).actualizarPreferenciaExterna(v);
+                  ref.invalidate(preferenciaNotifExternaProvider);
+                },
+              ),
+            );
+          }),
+          const Divider(height: 1),
+          Expanded(
+            child: async.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('No se pudo cargar: $e')),
+              data: (notificaciones) {
+                if (notificaciones.isEmpty) return const Center(child: Text('No tienes notificaciones.'));
+                return RefreshIndicator(
+                  onRefresh: () async => ref.invalidate(notificacionesProvider),
+                  child: ListView.separated(
+                    itemCount: notificaciones.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final n = notificaciones[index];
+                      return ListTile(
+                        leading: Icon(_iconoPara(n.tipo)),
+                        title: Text(n.titulo,
+                            style: TextStyle(fontWeight: n.leida ? FontWeight.normal : FontWeight.bold)),
+                        subtitle: Text(n.mensaje),
+                        trailing: n.leida ? null : const Icon(Icons.circle, size: 10, color: Colors.blue),
+                        onTap: () async {
+                          if (!n.leida) {
+                            await ref.read(notificationsRepositoryProvider).marcarLeida(n.id);
+                            ref.invalidate(notificacionesProvider);
+                            ref.invalidate(notificacionesNoLeidasProvider);
+                          }
+                          if (context.mounted) context.push(_rutaPara(n.tipo));
+                        },
+                      );
+                    },
+                  ),
                 );
               },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }

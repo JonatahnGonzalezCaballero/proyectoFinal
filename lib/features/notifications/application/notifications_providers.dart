@@ -4,6 +4,10 @@ import '../../../shared/providers/supabase_provider.dart';
 import '../data/notifications_repository.dart';
 import '../domain/notificacion.dart';
 
+final preferenciaNotifExternaProvider = FutureProvider.autoDispose<bool>((ref) {
+  return ref.watch(notificationsRepositoryProvider).obtenerPreferenciaExterna();
+});
+
 final notificationsRepositoryProvider = Provider<NotificationsRepository>((ref) {
   return NotificationsRepository(ref.watch(supabaseClientProvider));
 });

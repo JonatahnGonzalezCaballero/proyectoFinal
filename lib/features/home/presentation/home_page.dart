@@ -57,37 +57,16 @@ class HomePage extends ConsumerWidget {
                   onPressed: () => context.push('/proposals'),
                   child: const Text('Ver propuestas'),
                 ),
-                if (perfil.esAdministrador) ...[
-                  const SizedBox(height: 8),
-                  OutlinedButton(
-                    onPressed: () => context.push('/admin/proposals'),
-                    child: const Text('Revisar propuestas'),
-                  ),
-                ],
-                                const SizedBox(height: 8),
+                const SizedBox(height: 8),
                 FilledButton.tonal(
                   onPressed: () => context.push('/votings'),
                   child: const Text('Ver votaciones'),
                 ),
-                if (perfil.esAdministrador) ...[
-                  const SizedBox(height: 8),
-                  OutlinedButton(
-                    onPressed: () => context.push('/admin/votings'),
-                    child: const Text('Gestionar votaciones'),
-                  ),
-                ],
                 const SizedBox(height: 8),
                 FilledButton.tonal(
                   onPressed: () => context.push('/projects'),
                   child: const Text('Ver proyectos'),
                 ),
-                if (perfil.esAdministrador) ...[
-                  const SizedBox(height: 8),
-                  OutlinedButton(
-                    onPressed: () => context.push('/admin/projects/create'),
-                    child: const Text('Convertir propuesta en proyecto'),
-                  ),
-                ],
                 if (perfil.esAdministrador) ...[
                   const SizedBox(height: 16),
                   FilledButton(
