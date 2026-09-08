@@ -3,6 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/providers/supabase_provider.dart';
 import '../data/notifications_repository.dart';
 import '../domain/notificacion.dart';
+import '../data/push_repository.dart';
+
+final pushRepositoryProvider = Provider<PushRepository>((ref) {
+  return PushRepository(ref.watch(supabaseClientProvider));
+});
+
+final preferenciaNotifExternaProvider = FutureProvider.autoDispose<bool>((ref) {
+  return ref.watch(notificationsRepositoryProvider).obtenerPreferenciaExterna();
+});
 
 final notificationsRepositoryProvider = Provider<NotificationsRepository>((ref) {
   return NotificationsRepository(ref.watch(supabaseClientProvider));
