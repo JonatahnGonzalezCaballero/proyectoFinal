@@ -1,3 +1,15 @@
+class ProyectoPorCategoria {
+  final String categoria;
+  final int total;
+
+  const ProyectoPorCategoria({required this.categoria, required this.total});
+
+  factory ProyectoPorCategoria.fromMap(Map<String, dynamic> map) => ProyectoPorCategoria(
+        categoria: map['categoria'] as String,
+        total: (map['total'] as num).toInt(),
+      );
+}
+
 class Metricas {
   final int usuariosRegistrados;
   final int propuestasRegistradas;
@@ -16,7 +28,8 @@ class Metricas {
   final int proyectosFinalizados;
   final int proyectosSuspendidos;
   final double nivelParticipacion;
-
+  final List<ProyectoPorCategoria> proyectosPorCategoria;
+  
   const Metricas({
     required this.usuariosRegistrados,
     required this.propuestasRegistradas,
@@ -35,6 +48,7 @@ class Metricas {
     required this.proyectosFinalizados,
     required this.proyectosSuspendidos,
     required this.nivelParticipacion,
+    required this.proyectosPorCategoria,
   });
 
   factory Metricas.fromMap(Map<String, dynamic> map) => Metricas(
@@ -55,6 +69,7 @@ class Metricas {
         proyectosFinalizados: (map['proyectos_finalizados'] as num).toInt(),
         proyectosSuspendidos: (map['proyectos_suspendidos'] as num).toInt(),
         nivelParticipacion: (map['nivel_participacion'] as num).toDouble(),
+        proyectosPorCategoria: ((map['proyectos_por_categoria'] as List<dynamic>?) ?? []).map((e) => ProyectoPorCategoria.fromMap(e as Map<String, dynamic>)).toList(),
       );
 
   int get propuestasAprobadasPuras => propuestasAprobadas - propuestasConvertidas;

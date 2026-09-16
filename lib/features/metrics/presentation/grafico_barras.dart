@@ -50,14 +50,19 @@ class GraficoBarras extends StatelessWidget {
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        reservedSize: 36,
+                        reservedSize: 40,
                         getTitlesWidget: (value, meta) {
                           final index = value.toInt();
                           if (index < 0 || index >= datos.length) return const SizedBox.shrink();
                           return Padding(
                             padding: const EdgeInsets.only(top: 6),
-                            child: Text(datos[index].$1,
-                                style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center),
+                            child: Text(
+                              datos[index].$1,
+                              style: Theme.of(context).textTheme.bodySmall,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           );
                         },
                       ),

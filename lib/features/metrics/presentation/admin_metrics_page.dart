@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'grafico_barras.dart';
 
 import '../application/metrics_providers.dart';
-
+const _paletaCategorias = [
+  Colors.indigo, Colors.orange, Colors.teal, Colors.purple, Colors.brown, Colors.cyan,
+];
 class AdminMetricsPage extends ConsumerWidget {
   const AdminMetricsPage({super.key});
 
@@ -82,6 +84,20 @@ class AdminMetricsPage extends ConsumerWidget {
                   ('Suspendido', m.proyectosSuspendidos, Colors.red),
                 ],
               ),
+              if (m.proyectosPorCategoria.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                GraficoBarras(
+                  titulo: 'Proyectos por categoría',
+                  datos: [
+                    for (int i = 0; i < m.proyectosPorCategoria.length; i++)
+                      (
+                        m.proyectosPorCategoria[i].categoria,
+                        m.proyectosPorCategoria[i].total,
+                        _paletaCategorias[i % _paletaCategorias.length],
+                      ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 24),
               const SizedBox(height: 24),
               OutlinedButton.icon(
