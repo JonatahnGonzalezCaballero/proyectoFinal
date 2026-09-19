@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../auth/application/auth_providers.dart';
 import '../application/projects_providers.dart';
+import '../../../shared/widgets/estado_pill.dart';
+import '../../../shared/widgets/imagen_con_zoom.dart';
 
 class ProjectDetailPage extends ConsumerWidget {
   const ProjectDetailPage({super.key, required this.proyectoId});
@@ -37,7 +39,8 @@ class ProjectDetailPage extends ConsumerWidget {
             children: [
               Text(p.titulo, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 8),
-              Chip(label: Text(p.estadoLegible)),
+              // Chip(label: Text(p.estadoLegible)),
+              EstadoPill(estado: p.estado, etiqueta: p.estadoLegible),
               const SizedBox(height: 12),
               Text('A partir de la propuesta: ${p.propuestaTitulo}'),
               Text('Responsable: ${p.responsableNombre}'),
@@ -146,10 +149,25 @@ class _EvidenciaImagen extends ConsumerWidget {
     return urlAsync.when(
       loading: () => const SizedBox(width: 100, height: 100, child: Center(child: CircularProgressIndicator())),
       error: (_, __) => const SizedBox(width: 100, height: 100, child: Icon(Icons.broken_image)),
+      data: (url) => ImagenConZoom(imageProvider: NetworkImage(url), width: 100, height: 100),
+    );
+  }
+}
+
+/* class _EvidenciaImagen extends ConsumerWidget {
+  const _EvidenciaImagen({required this.path});
+  final String path;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final urlAsync = ref.watch(urlFirmadaEvidenciaProvider(path));
+    return urlAsync.when(
+      loading: () => const SizedBox(width: 100, height: 100, child: Center(child: CircularProgressIndicator())),
+      error: (_, __) => const SizedBox(width: 100, height: 100, child: Icon(Icons.broken_image)),
       data: (url) => ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: Image.network(url, width: 100, height: 100, fit: BoxFit.cover),
       ),
     );
   }
-}
+} */

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/home/presentation/welcome_page.dart';
 import '../../features/auth/application/auth_providers.dart';
 import '../../features/auth/presentation/forgot_password_page.dart';
 import '../../features/auth/presentation/login_page.dart';
@@ -54,7 +55,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   final client = ref.watch(supabaseClientProvider);
 
   return GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/',
     refreshListenable: GoRouterRefreshStream(client.auth.onAuthStateChange),
     redirect: (context, state) async {
       final estaAutenticado = client.auth.currentSession != null;
@@ -77,7 +78,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(path: '/', builder: (context, state) => const LoginPage()),
+      GoRoute(path: '/', builder: (context, state) => const WelcomePage()),
       GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       GoRoute(path: '/register', builder: (context, state) => const RegisterPage()),
       GoRoute(path: '/forgot-password', builder: (context, state) => const ForgotPasswordPage()),

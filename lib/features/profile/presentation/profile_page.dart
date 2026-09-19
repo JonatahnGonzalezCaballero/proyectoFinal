@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/errors/error_mapper.dart';
 import '../../auth/application/auth_providers.dart';
 import '../application/profile_providers.dart';
+import '../../../shared/widgets/imagen_con_zoom.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
@@ -96,15 +97,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   children: [
                     Stack(
                       children: [
-                        CircleAvatar(
-                          radius: 56,
-                          backgroundImage: perfil.avatarUrl != null ? NetworkImage(perfil.avatarUrl!) : null,
-                          child: perfil.avatarUrl == null
-                              ? Text(
-                                  perfil.nombreCompleto.isNotEmpty ? perfil.nombreCompleto[0].toUpperCase() : '?',
-                                  style: const TextStyle(fontSize: 32),
-                                )
-                              : null,
+                        GestureDetector(
+                          onTap: perfil.avatarUrl != null ? () => mostrarImagenAmpliada(context, NetworkImage(perfil.avatarUrl!)) : null,
+                          child: CircleAvatar(
+                            radius: 56,
+                            backgroundImage: perfil.avatarUrl != null ? NetworkImage(perfil.avatarUrl!) : null,
+                            child: perfil.avatarUrl == null
+                                ? Text(perfil.nombreCompleto.isNotEmpty ? perfil.nombreCompleto[0].toUpperCase() : '?', style: const TextStyle(fontSize: 32))
+                                : null,
+                          ),
                         ),
                         if (_subiendoAvatar)
                           const Positioned.fill(

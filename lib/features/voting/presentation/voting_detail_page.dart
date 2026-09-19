@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/errors/error_mapper.dart';
 import '../application/voting_providers.dart';
+import '../../../shared/widgets/estado_pill.dart';
 
 class VotingDetailPage extends ConsumerStatefulWidget {
   const VotingDetailPage({super.key, required this.votacionId});
@@ -56,7 +57,7 @@ class _VotingDetailPageState extends ConsumerState<VotingDetailPage> {
             children: [
               Text(votacion.titulo, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 8),
-              Chip(label: Text(votacion.estadoLegible)),
+              EstadoPill(estado: votacion.estado, etiqueta: votacion.estadoLegible),
               const SizedBox(height: 8),
               Text('Del ${_fmt(votacion.fechaInicio)} al ${_fmt(votacion.fechaFin)}'),
               if (votacion.descripcion != null && votacion.descripcion!.isNotEmpty) ...[

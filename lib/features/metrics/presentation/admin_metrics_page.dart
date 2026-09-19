@@ -4,9 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'grafico_barras.dart';
 
 import '../application/metrics_providers.dart';
+import '../../../core/theme/app_theme.dart';
+
 const _paletaCategorias = [
-  Colors.indigo, Colors.orange, Colors.teal, Colors.purple, Colors.brown, Colors.cyan,
+  AppColors.violeta, AppColors.albaricoque, AppColors.bosque, Color(0xFF9450FD), Color(0xFF3AC9FF), AppColors.coralTexto,
 ];
+
 class AdminMetricsPage extends ConsumerWidget {
   const AdminMetricsPage({super.key});
 
@@ -57,31 +60,31 @@ class AdminMetricsPage extends ConsumerWidget {
               GraficoBarras(
                 titulo: 'Propuestas por estado',
                 datos: [
-                  ('Pendiente', m.propuestasPendientes, Colors.amber),
-                  ('En revisión', m.propuestasEnRevision, Colors.blue),
-                  ('Aprobada', m.propuestasAprobadasPuras, Colors.green),
-                  ('Convertida', m.propuestasConvertidas, Colors.teal),
-                  ('Rechazada', m.propuestasRechazadas, Colors.red),
+                  ('Pendiente', m.propuestasPendientes, AppColors.albaricoque),
+                  ('En revisión', m.propuestasEnRevision, AppColors.violeta),
+                  ('Aprobada', m.propuestasAprobadasPuras, AppColors.bosque),
+                  ('Convertida', m.propuestasConvertidas, Color(0xFF2C6A00)),
+                  ('Rechazada', m.propuestasRechazadas, AppColors.coralTexto),
                 ],
               ),
               const SizedBox(height: 16),
               GraficoBarras(
                 titulo: 'Votaciones por estado',
                 datos: [
-                  ('Programada', m.votacionesProgramadas, Colors.amber),
-                  ('Activa', m.votacionesActivas, Colors.green),
-                  ('Finalizada', m.votacionesFinalizadas, Colors.blue),
-                  ('Cancelada', m.votacionesCanceladas, Colors.red),
+                  ('Programada', m.votacionesProgramadas, AppColors.albaricoque),
+                  ('Activa', m.votacionesActivas, AppColors.bosque),
+                  ('Finalizada', m.votacionesFinalizadas, AppColors.violeta),
+                  ('Cancelada', m.votacionesCanceladas, AppColors.coralTexto),
                 ],
               ),
               const SizedBox(height: 16),
               GraficoBarras(
                 titulo: 'Proyectos por estado',
                 datos: [
-                  ('Planeado', m.proyectosPlaneados, Colors.amber),
-                  ('En ejecución', m.proyectosActivos, Colors.blue),
-                  ('Finalizado', m.proyectosFinalizados, Colors.green),
-                  ('Suspendido', m.proyectosSuspendidos, Colors.red),
+                  ('Planeado', m.proyectosPlaneados, AppColors.albaricoque),
+                  ('En ejecución', m.proyectosActivos, AppColors.violeta),
+                  ('Finalizado', m.proyectosFinalizados, AppColors.bosque),
+                  ('Suspendido', m.proyectosSuspendidos, AppColors.coralTexto),
                 ],
               ),
               if (m.proyectosPorCategoria.isNotEmpty) ...[

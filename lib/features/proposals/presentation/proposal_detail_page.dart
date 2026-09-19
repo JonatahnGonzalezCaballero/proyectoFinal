@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../auth/application/auth_providers.dart';
 import '../application/proposals_providers.dart';
+import '../../../shared/widgets/estado_pill.dart';
+import '../../../shared/widgets/imagen_con_zoom.dart';
 
 class ProposalDetailPage extends ConsumerWidget {
   const ProposalDetailPage({super.key, required this.propuestaId});
@@ -28,7 +30,7 @@ class ProposalDetailPage extends ConsumerWidget {
               children: [
                 Text(p.titulo, style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 8),
-                Chip(label: Text(p.estadoLegible)),
+                EstadoPill(estado: p.estado, etiqueta: p.estadoLegible),
                 const SizedBox(height: 4),
                 Text('Publicado por ${p.autorNombre}', style: Theme.of(context).textTheme.bodySmall),
                 const SizedBox(height: 16),
@@ -78,10 +80,7 @@ class _ImagenPropuesta extends ConsumerWidget {
     return urlAsync.when(
       loading: () => const SizedBox(width: 120, height: 120, child: Center(child: CircularProgressIndicator())),
       error: (_, __) => const SizedBox(width: 120, height: 120, child: Icon(Icons.broken_image)),
-      data: (url) => ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.network(url, width: 120, height: 120, fit: BoxFit.cover),
-      ),
+      data: (url) => ImagenConZoom(imageProvider: NetworkImage(url), width: 120, height: 120),
     );
   }
 }
