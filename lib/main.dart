@@ -5,10 +5,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/config/supabase_config.dart';
 import 'core/router/app_router.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 //import 'core/theme/app_theme.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  usePathUrlStrategy();
   await dotenv.load(fileName: '.env');
 
   await Supabase.initialize(
