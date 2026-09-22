@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../application/proposals_providers.dart';
 import '../domain/propuesta.dart';
+import '../../../shared/widgets/global_appbar_actions.dart';
 
 class ProposalsListPage extends ConsumerStatefulWidget {
   const ProposalsListPage({super.key});
@@ -40,6 +41,7 @@ class _ProposalsListPageState extends ConsumerState<ProposalsListPage>
             Tab(text: 'Comunidad'),
           ],
         ),
+        actions: const [GlobalAppBarActions()]
       ),
       body: TabBarView(
         controller: _tabController,

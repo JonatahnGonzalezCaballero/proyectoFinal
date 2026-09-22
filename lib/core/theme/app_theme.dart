@@ -25,32 +25,33 @@ class AppColors {
 }
 
 class EstadoPillColors {
-  const EstadoPillColors({required this.fondo, required this.texto});
+  const EstadoPillColors({required this.fondo, required this.texto, required this.icono});
   final Color fondo;
   final Color texto;
+  final IconData icono;
 
   static EstadoPillColors para(String estado) {
     switch (estado) {
       case 'pendiente':
       case 'programada':
       case 'planeado':
-        return const EstadoPillColors(fondo: Color(0xFFFFE9D6), texto: Color(0xFF9A5B00));
+        return const EstadoPillColors(fondo: Color(0xFFFFE9D6), texto: Color(0xFF9A5B00), icono: Icons.schedule);
       case 'en_revision':
-        return const EstadoPillColors(fondo: AppColors.periwinkle, texto: AppColors.violeta);
+        return const EstadoPillColors(fondo: AppColors.periwinkle, texto: AppColors.violeta, icono: Icons.search);
       case 'aprobada':
       case 'activa':
       case 'en_ejecucion':
-        return const EstadoPillColors(fondo: AppColors.menta, texto: Color(0xFF2C6A00));
+        return const EstadoPillColors(fondo: AppColors.menta, texto: Color(0xFF2C6A00), icono: Icons.check_circle);
       case 'rechazada':
       case 'cancelada':
       case 'suspendido':
-        return const EstadoPillColors(fondo: AppColors.coralSuave, texto: AppColors.coralTexto);
+        return const EstadoPillColors(fondo: AppColors.coralSuave, texto: AppColors.coralTexto, icono: Icons.cancel_outlined);
       case 'finalizada':
       case 'finalizado':
       case 'convertida_proyecto':
-        return const EstadoPillColors(fondo: Color(0xFFD9F2EC), texto: AppColors.bosque);
+        return const EstadoPillColors(fondo: Color(0xFFD9F2EC), texto: AppColors.bosque, icono: Icons.flag);
       default:
-        return const EstadoPillColors(fondo: AppColors.nube, texto: AppColors.pizarra);
+        return const EstadoPillColors(fondo: AppColors.nube, texto: AppColors.pizarra, icono: Icons.info_outline);
     }
   }
 }

@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../notifications/application/notifications_providers.dart';
+import '../../../shared/widgets/global_appbar_actions.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -17,18 +18,10 @@ class HomePage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Participa!!',style: GoogleFonts.lobster(fontSize: 34,),),
-        actions: [
-          Consumer(builder: (context, ref, _) {
-            final noLeidasAsync = ref.watch(notificacionesNoLeidasProvider);
-            final count = noLeidasAsync.value ?? 0;
-            return IconButton(
-              tooltip: 'Notificaciones',
-              icon: Badge(label: Text('$count'), isLabelVisible: count > 0, child: const Icon(Icons.notifications_outlined)),
-              onPressed: () => context.push('/notifications'),
-            );
-          }),
-          IconButton(icon: const Icon(Icons.logout), tooltip: 'Cerrar sesión', onPressed: () => ref.read(authRepositoryProvider).cerrarSesion()),
+        actions: const [
+          GlobalAppBarActions(),
         ],
+        
       ),
       body: perfilAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

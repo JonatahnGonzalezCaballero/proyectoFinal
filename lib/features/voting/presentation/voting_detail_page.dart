@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/errors/error_mapper.dart';
 import '../application/voting_providers.dart';
 import '../../../shared/widgets/estado_pill.dart';
+import '../../../shared/widgets/global_appbar_actions.dart';
+import '../../../shared/widgets/info_row.dart';
+import 'resultado_barra.dart';
 
 class VotingDetailPage extends ConsumerStatefulWidget {
   const VotingDetailPage({super.key, required this.votacionId});
@@ -46,7 +49,7 @@ class _VotingDetailPageState extends ConsumerState<VotingDetailPage> {
     final yaVotoAsync = ref.watch(yaVotoProvider(widget.votacionId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Votación')),
+      appBar: AppBar(title: const Text('Votación'), actions: const [GlobalAppBarActions()]),
       body: votacionAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('No se pudo cargar: $e')),
@@ -59,7 +62,8 @@ class _VotingDetailPageState extends ConsumerState<VotingDetailPage> {
               const SizedBox(height: 8),
               EstadoPill(estado: votacion.estado, etiqueta: votacion.estadoLegible),
               const SizedBox(height: 8),
-              Text('Del ${_fmt(votacion.fechaInicio)} al ${_fmt(votacion.fechaFin)}'),
+              InfoRow(icono: Icons.calendar_today_outlined, texto: 'Del ${_fmt(votacion.fechaInicio)} al ${_fmt(votacion.fechaFin)}'),
+              InfoRow(icono: Icons.label_outline, texto: votacion.esSiNo ? 'Votación Sí/No' : 'Selección múltiple'),
               if (votacion.descripcion != null && votacion.descripcion!.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Text(votacion.descripcion!),
@@ -162,18 +166,28 @@ class _VotingDetailPageState extends ConsumerState<VotingDetailPage> {
                       if (mostrarResultados) ...[
                         const SizedBox(height: 24),
                         Text('Resultados', style: Theme.of(context).textTheme.titleMedium),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         Consumer(builder: (context, ref, _) {
                           final resultadosAsync = ref.watch(resultadosVotacionProvider(widget.votacionId));
                           return resultadosAsync.when(
                             loading: () => const CircularProgressIndicator(),
                             error: (e, _) => Text('No se pudieron cargar los resultados: $e'),
-                            data: (resultados) => Column(
-                              children: resultados
-                                  .map((r) =>
-                                      ListTile(title: Text(r.opcionTitulo), trailing: Text('${r.totalVotos} voto(s)')))
-                                  .toList(),
-                            ),
+                            data: (resultados) {
+                              final total = resultados.fold<int>(0, (s, r) => s + r.totalVotos);
+                              final maxVotos = resultados.isEmpty
+                                  ? 0
+                                  : resultados.map((r) => r.totalVotos).reduce((a, b) => a > b ? a : b);
+                              return Column(
+                                children: resultados
+                                    .map((r) => ResultadoBarra(
+                                          etiqueta: r.opcionTitulo,
+                                          votos: r.totalVotos,
+                                          totalVotos: total,
+                                          esLider: maxVotos > 0 && r.totalVotos == maxVotos,
+                                        ))
+                                    .toList(),
+                              );
+                            },
                           );
                         }),
                       ],

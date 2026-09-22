@@ -11,9 +11,16 @@ class EstadoPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final colores = EstadoPillColors.para(estado);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(color: colores.fondo, borderRadius: BorderRadius.circular(6)),
-      child: Text(etiqueta, style: TextStyle(color: colores.texto, fontSize: 12, fontWeight: FontWeight.w600)),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(color: colores.fondo, borderRadius: BorderRadius.circular(999)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(colores.icono, size: 14, color: colores.texto),
+          const SizedBox(width: 6),
+          Text(etiqueta, style: TextStyle(color: colores.texto, fontSize: 12, fontWeight: FontWeight.w600)),
+        ],
+      ),
     );
   }
 }

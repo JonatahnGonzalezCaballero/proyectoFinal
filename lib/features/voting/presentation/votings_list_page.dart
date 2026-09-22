@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../application/voting_providers.dart';
+import '../../../shared/widgets/global_appbar_actions.dart';
 
 class VotingsListPage extends ConsumerWidget {
   const VotingsListPage({super.key});
@@ -11,7 +12,7 @@ class VotingsListPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(votacionesProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Votaciones')),
+      appBar: AppBar(title: const Text('Votaciones'), actions: const [GlobalAppBarActions()]),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('No se pudo cargar: $e')),

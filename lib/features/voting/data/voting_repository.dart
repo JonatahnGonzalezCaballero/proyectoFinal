@@ -77,8 +77,8 @@ class VotingRepository {
     final id = await _client.rpc('crear_votacion', params: {
       'p_titulo': titulo,
       'p_descripcion': descripcion,
-      'p_fecha_inicio': fechaInicio.toIso8601String(),
-      'p_fecha_fin': fechaFin.toIso8601String(),
+      'p_fecha_inicio': fechaInicio.toUtc().toIso8601String(),
+      'p_fecha_fin': fechaFin.toUtc().toIso8601String(),
       'p_tipo': tipo,
       'p_propuesta_ids': propuestaIds,
     });

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../application/projects_providers.dart';
+import '../../../shared/widgets/global_appbar_actions.dart';
 
 class ProjectsListPage extends ConsumerWidget {
   const ProjectsListPage({super.key});
@@ -11,7 +12,7 @@ class ProjectsListPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(proyectosProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Proyectos')),
+      appBar: AppBar(title: const Text('Proyectos'), actions: const [GlobalAppBarActions()]),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('No se pudo cargar: $e')),

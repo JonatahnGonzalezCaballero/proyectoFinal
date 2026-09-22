@@ -18,12 +18,14 @@ class WelcomePage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    height: 220,
-                    width: double.infinity,
-                    decoration: BoxDecoration(color: AppColors.periwinkle, borderRadius: BorderRadius.circular(24)),
-                    alignment: Alignment.center,
-                    child: const Icon(Icons.groups_2_outlined, size: 96, color: AppColors.violeta),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: Image.asset(
+                      'assets/images/comunidad.jpg',
+                      width: double.infinity,
+                      height: 220,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   const SizedBox(height: 40),
                   Text('Participa en tu comunidad', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineLarge),

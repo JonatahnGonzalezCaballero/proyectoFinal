@@ -6,6 +6,8 @@ import '../../auth/application/auth_providers.dart';
 import '../application/proposals_providers.dart';
 import '../../../shared/widgets/estado_pill.dart';
 import '../../../shared/widgets/imagen_con_zoom.dart';
+import '../../../shared/widgets/global_appbar_actions.dart';
+import '../../../shared/widgets/info_row.dart';
 
 class ProposalDetailPage extends ConsumerWidget {
   const ProposalDetailPage({super.key, required this.propuestaId});
@@ -17,7 +19,7 @@ class ProposalDetailPage extends ConsumerWidget {
     final perfilAsync = ref.watch(perfilActualProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Detalle de propuesta')),
+      appBar: AppBar(title: const Text('Detalle de propuesta'), actions: const [GlobalAppBarActions()]),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('No se pudo cargar la propuesta: $e')),
@@ -30,12 +32,12 @@ class ProposalDetailPage extends ConsumerWidget {
               children: [
                 Text(p.titulo, style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 8),
-                EstadoPill(estado: p.estado, etiqueta: p.estadoLegible),
-                const SizedBox(height: 4),
-                Text('Publicado por ${p.autorNombre}', style: Theme.of(context).textTheme.bodySmall),
-                const SizedBox(height: 16),
-                Text('Categoría: ${p.categoriaNombre}'),
-                if (p.ubicacion != null && p.ubicacion!.isNotEmpty) Text('Ubicación: ${p.ubicacion}'),
+                 EstadoPill(estado: p.estado, etiqueta: p.estadoLegible),
+                const SizedBox(height: 8),
+                InfoRow(icono: Icons.person_outline, texto: 'Publicado por ${p.autorNombre}'),
+                InfoRow(icono: Icons.category_outlined, texto: p.categoriaNombre),
+                if (p.ubicacion != null && p.ubicacion!.isNotEmpty) InfoRow(icono: Icons.place_outlined, texto: p.ubicacion!),
+                InfoRow(icono: Icons.calendar_today_outlined, texto: _fmt(p.fechaCreacion)),
                 const SizedBox(height: 16),
                 Text(p.descripcion),
                 if (p.observaciones != null && p.observaciones!.isNotEmpty) ...[
@@ -68,6 +70,7 @@ class ProposalDetailPage extends ConsumerWidget {
       ),
     );
   }
+  String _fmt(DateTime d) => '${d.day}/${d.month}/${d.year}';
 }
 
 class _ImagenPropuesta extends ConsumerWidget {
@@ -84,3 +87,4 @@ class _ImagenPropuesta extends ConsumerWidget {
     );
   }
 }
+

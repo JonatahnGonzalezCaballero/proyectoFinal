@@ -6,6 +6,9 @@ import '../../auth/application/auth_providers.dart';
 import '../application/projects_providers.dart';
 import '../../../shared/widgets/estado_pill.dart';
 import '../../../shared/widgets/imagen_con_zoom.dart';
+import '../../../shared/widgets/global_appbar_actions.dart';
+import '../../../shared/widgets/info_row.dart';
+import '../../../core/theme/app_theme.dart';
 
 class ProjectDetailPage extends ConsumerWidget {
   const ProjectDetailPage({super.key, required this.proyectoId});
@@ -21,7 +24,7 @@ class ProjectDetailPage extends ConsumerWidget {
     final esAdmin = perfilAsync.value?.esAdministrador ?? false;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Proyecto')),
+      appBar: AppBar(title: const Text('Proyecto'), actions: const [GlobalAppBarActions()]),
       floatingActionButton: esAdmin
           ? FloatingActionButton.extended(
               onPressed: () => context.push('/admin/projects/$proyectoId/update'),
@@ -41,21 +44,36 @@ class ProjectDetailPage extends ConsumerWidget {
               const SizedBox(height: 8),
               // Chip(label: Text(p.estadoLegible)),
               EstadoPill(estado: p.estado, etiqueta: p.estadoLegible),
-              const SizedBox(height: 12),
-              Text('A partir de la propuesta: ${p.propuestaTitulo}'),
-              Text('Responsable: ${p.responsableNombre}'),
-              if (p.fechaInicio != null) Text('Inicio: ${_fmt(p.fechaInicio!)}'),
-              if (p.fechaFinEstimada != null) Text('Fin estimado: ${_fmt(p.fechaFinEstimada!)}'),
+              const SizedBox(height: 8),
+              InfoRow(icono: Icons.assignment_outlined, texto: 'A partir de: ${p.propuestaTitulo}'),
+              InfoRow(icono: Icons.person_outline, texto: 'Responsable: ${p.responsableNombre}'),
+              if (p.fechaInicio != null) InfoRow(icono: Icons.calendar_today_outlined, texto: 'Inicio: ${_fmt(p.fechaInicio!)}'),
+              if (p.fechaFinEstimada != null) InfoRow(icono: Icons.event_outlined, texto: 'Fin estimado: ${_fmt(p.fechaFinEstimada!)}'),
               if (p.descripcion != null && p.descripcion!.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Text(p.descripcion!),
               ],
               const SizedBox(height: 16),
-              Text('Avance: ${p.porcentajeAvance}%'),
-              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Avance del proyecto', style: Theme.of(context).textTheme.titleMedium),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(color: AppColors.menta, borderRadius: BorderRadius.circular(999)),
+                    child: Text('${p.porcentajeAvance}%', style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF2C6A00), fontSize: 12)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
               ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(value: p.porcentajeAvance / 100, minHeight: 8),
+                borderRadius: BorderRadius.circular(8),
+                child: LinearProgressIndicator(
+                  value: p.porcentajeAvance / 100,
+                  minHeight: 10,
+                  backgroundColor: AppColors.guijarro,
+                  valueColor: const AlwaysStoppedAnimation(AppColors.violeta),
+                ),
               ),
               if (esAdmin) ...[
                 const SizedBox(height: 16),

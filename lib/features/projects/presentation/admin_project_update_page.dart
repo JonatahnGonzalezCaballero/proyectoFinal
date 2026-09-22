@@ -19,17 +19,11 @@ class AdminProjectUpdatePage extends ConsumerStatefulWidget {
 class _AdminProjectUpdatePageState extends ConsumerState<AdminProjectUpdatePage> {
   final _formKey = GlobalKey<FormState>();
   final _descripcionCtrl = TextEditingController();
-  double _porcentaje = 0;
+  double? _porcentaje;
   bool _actualizarPorcentaje = false;
   final List<XFile> _evidencias = [];
   bool _guardando = false;
   String? _error;
-
-  @override
-  void dispose() {
-    _descripcionCtrl.dispose();
-    super.dispose();
-  }
 
   Future<void> _seleccionarEvidencias() async {
     final archivos = await ImagePicker().pickMultiImage(imageQuality: 80);
@@ -47,7 +41,7 @@ class _AdminProjectUpdatePageState extends ConsumerState<AdminProjectUpdatePage>
       final actualizacionId = await repo.registrarAvance(
         proyectoId: widget.proyectoId,
         descripcion: _descripcionCtrl.text.trim(),
-        porcentajeAvance: _actualizarPorcentaje ? _porcentaje.round() : null,
+        porcentajeAvance: _actualizarPorcentaje ? _porcentaje!.round() : null,
       );
 
       for (final evidencia in _evidencias) {
@@ -71,66 +65,96 @@ class _AdminProjectUpdatePageState extends ConsumerState<AdminProjectUpdatePage>
   }
 
   @override
+  void dispose() {
+    _descripcionCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final proyectoAsync = ref.watch(proyectoProvider(widget.proyectoId));
+
     return Scaffold(
       appBar: AppBar(title: const Text('Registrar avance')),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 600),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextFormField(
-                    controller: _descripcionCtrl,
-                    decoration: const InputDecoration(labelText: 'Descripción del avance'),
-                    maxLines: 4,
-                    validator: (v) => (v == null || v.trim().length < 10) ? 'Describe el avance realizado' : null,
+      body: proyectoAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('No se pudo cargar el proyecto: $e')),
+        data: (proyecto) {
+          if (proyecto.estado == 'finalizado') {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  'Este proyecto ya está finalizado (100%) y no admite más avances.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ),
+            );
+          }
+
+          _porcentaje ??= proyecto.porcentajeAvance.toDouble();
+          final rangoDisponible = 100 - proyecto.porcentajeAvance;
+
+          return Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text('Avance actual: ${proyecto.porcentajeAvance}%', style: Theme.of(context).textTheme.bodyMedium),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _descripcionCtrl,
+                        decoration: const InputDecoration(labelText: 'Descripción del avance'),
+                        maxLines: 4,
+                        validator: (v) => (v == null || v.trim().length < 10) ? 'Describe el avance realizado' : null,
+                      ),
+                      const SizedBox(height: 16),
+                      SwitchListTile(
+                        title: const Text('Actualizar porcentaje de avance'),
+                        value: _actualizarPorcentaje,
+                        onChanged: (v) => setState(() => _actualizarPorcentaje = v),
+                      ),
+                      if (_actualizarPorcentaje) ...[
+                        Text('${_porcentaje!.round()}% (no puede ser menor al ${proyecto.porcentajeAvance}% actual)'),
+                        Slider(
+                          value: _porcentaje!,
+                          min: proyecto.porcentajeAvance.toDouble(),
+                          max: 100,
+                          divisions: rangoDisponible == 0 ? null : rangoDisponible,
+                          label: '${_porcentaje!.round()}%',
+                          onChanged: (v) => setState(() => _porcentaje = v),
+                        ),
+                      ],
+                      const SizedBox(height: 16),
+                      OutlinedButton.icon(
+                        onPressed: _seleccionarEvidencias,
+                        icon: const Icon(Icons.image_outlined),
+                        label: Text(_evidencias.isEmpty ? 'Adjuntar evidencias' : '${_evidencias.length} imagen(es) seleccionada(s)'),
+                      ),
+                      if (_error != null) ...[
+                        const SizedBox(height: 12),
+                        Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                      ],
+                      const SizedBox(height: 24),
+                      FilledButton(
+                        onPressed: _guardando ? null : _guardar,
+                        child: _guardando
+                            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                            : const Text('Guardar avance'),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  SwitchListTile(
-                    title: const Text('Actualizar porcentaje de avance'),
-                    value: _actualizarPorcentaje,
-                    onChanged: (v) => setState(() => _actualizarPorcentaje = v),
-                  ),
-                  if (_actualizarPorcentaje) ...[
-                    Text('${_porcentaje.round()}%'),
-                    Slider(
-                      value: _porcentaje,
-                      min: 0,
-                      max: 100,
-                      divisions: 100,
-                      label: '${_porcentaje.round()}%',
-                      onChanged: (v) => setState(() => _porcentaje = v),
-                    ),
-                  ],
-                  const SizedBox(height: 16),
-                  OutlinedButton.icon(
-                    onPressed: _seleccionarEvidencias,
-                    icon: const Icon(Icons.image_outlined),
-                    label: Text(_evidencias.isEmpty
-                        ? 'Adjuntar evidencias'
-                        : '${_evidencias.length} imagen(es) seleccionada(s)'),
-                  ),
-                  if (_error != null) ...[
-                    const SizedBox(height: 12),
-                    Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-                  ],
-                  const SizedBox(height: 24),
-                  FilledButton(
-                    onPressed: _guardando ? null : _guardar,
-                    child: _guardando
-                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Text('Guardar avance'),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
