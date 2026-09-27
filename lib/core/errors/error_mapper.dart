@@ -20,6 +20,9 @@ String _mensajeAuth(String original) {
   if (original.contains('Invalid login credentials')) {
     return 'Correo o contraseña incorrectos.';
   }
+  if (original.contains('Auth session missing')) {
+    return 'El enlace de recuperación no es válido o ya expiró. Solicita uno nuevo desde "¿Olvidaste tu contraseña?".';
+  }
   if (original.contains('already registered')) {
     return 'Ya existe una cuenta registrada con ese correo.';
   }
