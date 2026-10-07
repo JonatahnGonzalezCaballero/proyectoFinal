@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../shared/providers/supabase_provider.dart';
+import '../../../shared/widgets/consentimiento_datos_dialog.dart';
 
 import '../../../core/errors/error_mapper.dart';
 import '../application/auth_providers.dart';
@@ -37,7 +39,34 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             correo: _correoCtrl.text.trim(),
             password: _passwordCtrl.text,
           );
-      // El redirect del router navega automáticamente al detectar la sesión.
+
+      final client = ref.read(supabaseClientProvider);
+      final userId = client.auth.currentUser?.id;
+      if (userId != null) {
+        final perfil = await client
+            .from('usuarios')
+            .select('fecha_aceptacion_terminos')
+            .eq('id', userId)
+            .maybeSingle();
+        final yaAcepto = perfil != null && perfil['fecha_aceptacion_terminos'] != null;
+
+        if (!yaAcepto) {
+          if (!mounted) return;
+          final acepto = await mostrarConsentimientoDatos(context);
+          if (acepto) {
+            await client
+                .from('usuarios')
+                .update({'fecha_aceptacion_terminos': DateTime.now().toUtc().toIso8601String()})
+                .eq('id', userId);
+          } else {
+            await client.auth.signOut();
+            if (mounted) {
+              setState(() => _error = 'Debes aceptar la Política de Tratamiento de Datos Personales para usar la aplicación.');
+            }
+            return;
+          }
+        }
+      }
     } catch (e) {
       setState(() => _error = mapSupabaseError(e).message);
     } finally {

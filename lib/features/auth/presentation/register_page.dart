@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../shared/widgets/consentimiento_datos_dialog.dart';
 
 import '../../../core/errors/error_mapper.dart';
 import '../application/auth_providers.dart';
@@ -32,6 +33,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   Future<void> _registrar() async {
     if (!_formKey.currentState!.validate()) return;
+
+    final acepto = await mostrarConsentimientoDatos(context);
+    if (!acepto) return;
+
     setState(() {
       _cargando = true;
       _error = null;

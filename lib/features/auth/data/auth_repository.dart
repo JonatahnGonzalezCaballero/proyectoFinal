@@ -13,11 +13,12 @@ class AuthRepository {
     required String correo,
     required String password,
     required String nombreCompleto,
-  }) async {
+  }) async {  
     await _client.auth.signUp(
       email: correo,
       password: password,
-      data: {'nombre_completo': nombreCompleto},
+      data: {'nombre_completo': nombreCompleto, 'acepto_terminos': true,},
+      
     );
   }
 
